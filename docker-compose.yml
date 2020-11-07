@@ -62,14 +62,12 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
-  registry:
+  nginx:
     restart: always
-    image: registry:2
+    image: nginx:latest
     ports:
-      - 5000:5000
-    environment:
-      REGISTRY_HTTP_TLS_CERTIFICATE: /var/lib/registry/cert/reg.pem
-      REGISTRY_HTTP_TLS_KEY: /var/lib/registry/cert/reg-key.pem
+      - 80:80
+      - 443:443
     volumes:
-      - ./?:/etc/nginx/ssl/
+      - ./certs:/etc/nginx/ssl:ro
       - ./nginx:/etc/nginx/conf.d:ro
