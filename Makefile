@@ -1,4 +1,6 @@
 
+USER?=crackcomm
+
 certs/ca.pem:
 	mkdir -p certs
 	cd certs && cfssl genkey -initca ../csr.json | cfssljson -bare ca
@@ -32,5 +34,16 @@ uninstall-%:
 
 uninstall: uninstall-ca uninstall-nginx
 
+registry-image-resource:
+	git clone https://github.com/concourse/registry-image-resource.git
+
+patch-image: registry-image-resource
+	cp certs/ca.pem registry-image-resource/ca.pem
+	cd registry-image-resource && git apply ../cc-ca.patch
+
+registry-image: patch-image
+	cd registry-image-resource && sudo docker build -t $(USER)/registry-image-resource -f dockerfiles/alpine/Dockerfile .
+	sudo docker push $(USER)/registry-image-resource
+
 clean:
-	make clean
+	rm -rf certs registry-image-resource
