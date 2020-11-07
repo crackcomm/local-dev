@@ -1,0 +1,20 @@
+{
+  "hosts": [
+    "registry.local",
+    "gitea.local",
+    "concourse.local"
+  ],
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "San Francisco",
+      "O": "IPFN",
+      "OU": "WWW",
+      "ST": "California"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+version: '3'
+
+services:
+  gitea:
+    image: gitea/gitea:latest
+    container_name: gitea
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    restart: always
+    depends_on:
+      - concourse-db
+    volumes:
+      - /home/pah/.ipfn-os/gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "4422:22"
+      - "4424:4424"
+
+  concourse-db:
+    image: postgres
+    volumes:
+      - /home/pah/.ipfn-os/pgdata:/database
+    environment:
+      POSTGRES_DB: concourse
+      POSTGRES_PASSWORD: concourse_pass
+      POSTGRES_USER: concourse_user
+      PGDATA: /database
+
+  concourse:
+    image: concourse/concourse
+    command: quickstart
+    privileged: true
+    depends_on:
+      - concourse-db
+      - gitea
+      - registry
+    ports: ["6883:8080"]
+    environment:
+      CONCOURSE_POSTGRES_HOST: concourse-db
+      CONCOURSE_POSTGRES_USER: concourse_user
+      CONCOURSE_POSTGRES_PASSWORD: concourse_pass
+      CONCOURSE_POSTGRES_DATABASE: concourse
+      CONCOURSE_EXTERNAL_URL: http://concourse:6883
+      CONCOURSE_ADD_LOCAL_USER: test:test
+      CONCOURSE_MAIN_TEAM_LOCAL_USER: test
+      CONCOURSE_WORKER_BAGGAGECLAIM_DRIVER: overlay
+      CONCOURSE_CLIENT_SECRET: REPLACEMEREPLACEMEREPLACEMEREPLACEME
+      CONCOURSE_TSA_CLIENT_SECRET: REPLACEMEREPLACEMEREPLACEMEREPLACEME
+
+  registry:
+    restart: always
+    image: registry:2
+    ports:
+      - 5000:5000
+    environment:
+      REGISTRY_HTTP_TLS_CERTIFICATE: /var/lib/registry/cert/reg.pem
+      REGISTRY_HTTP_TLS_KEY: /var/lib/registry/cert/reg-key.pem
+    volumes:
+      - /home/pah/.ipfn-os/registry:/var/lib/registry
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+  registry:
+    restart: always
+    image: registry:2
+    ports:
+      - 5000:5000
+    environment:
+      REGISTRY_HTTP_TLS_CERTIFICATE: /var/lib/registry/cert/reg.pem
+      REGISTRY_HTTP_TLS_KEY: /var/lib/registry/cert/reg-key.pem
+    volumes:
+      - ./?:/etc/nginx/ssl/
+      - ./nginx:/etc/nginx/conf.d:ro
