@@ -1,4 +1,5 @@
 {
+  "CN": "Local Dev CA",
   "hosts": [
     "registry.local",
     "gitea.local",
