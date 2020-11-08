@@ -3,4 +3,6 @@
 *.csr
 *.crt
 
+certs/
+
 registry-image-resource/

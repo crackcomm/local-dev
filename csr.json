@@ -1,9 +1,9 @@
 {
   "CN": "Local Dev CA",
   "hosts": [
-    "registry.local",
-    "gitea.local",
-    "concourse.local"
+    "registry.dev",
+    "gitea.dev",
+    "concourse.dev"
   ],
   "key": {
     "algo": "rsa",

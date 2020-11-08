@@ -1,0 +1,14 @@
+diff --git a/dockerfiles/alpine/Dockerfile b/dockerfiles/alpine/Dockerfile
+index e6e5bcd..77fdab3 100644
+--- a/dockerfiles/alpine/Dockerfile
++++ b/dockerfiles/alpine/Dockerfile
+@@ -23,6 +23,9 @@ RUN chmod +x /opt/resource/*
+ # https://github.com/gliderlabs/docker-alpine/issues/367
+ RUN echo "hosts: files dns" > /etc/nsswitch.conf
+ 
++COPY ca.pem /usr/local/share/ca-certificates/local-ca.crt
++RUN update-ca-certificates
++
+ FROM resource AS tests
+ COPY --from=builder /tests /tests
+ ADD . /docker-image-resource

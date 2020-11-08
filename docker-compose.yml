@@ -37,8 +37,8 @@ services:
       - gitea
       - registry
     links:
-      - "gitea:gitea.local"
-      - "registry:registry.local"
+      - "gitea:gitea.dev"
+      - "registry:registry.dev"
     volumes:
       - /home/pah/.ipfn-os/concourse:/worker-state
     ports: ["6883:8080"]
@@ -47,7 +47,7 @@ services:
       CONCOURSE_POSTGRES_USER: concourse_user
       CONCOURSE_POSTGRES_PASSWORD: concourse_pass
       CONCOURSE_POSTGRES_DATABASE: concourse
-      CONCOURSE_EXTERNAL_URL: https://concourse.local
+      CONCOURSE_EXTERNAL_URL: https://concourse.dev
       CONCOURSE_ADD_LOCAL_USER: test:test
       CONCOURSE_MAIN_TEAM_LOCAL_USER: test
       CONCOURSE_WORKER_BAGGAGECLAIM_DRIVER: overlay
@@ -56,27 +56,31 @@ services:
 
   registry:
     restart: always
+    hostname: registry.dev
+    container_name: registry.dev
     image: registry:2
     ports:
       - 5000:5000
     environment:
-      REGISTRY_HTTP_TLS_CERTIFICATE: /var/lib/registry/cert/reg.pem
-      REGISTRY_HTTP_TLS_KEY: /var/lib/registry/cert/reg-key.pem
+      # Same certs as exposed by nginx
+      REGISTRY_HTTP_TLS_CERTIFICATE: /var/lib/registry/cert/nginx.crt
+      REGISTRY_HTTP_TLS_KEY: /var/lib/registry/cert/nginx-key.pem
     volumes:
       - /home/pah/.ipfn-os/registry:/var/lib/registry
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
   nginx:
-    depends_on:
-      - gitea
-      - registry
-      - concourse
     restart: always
-    image: nginx:latest
+    image: nginx:stable
     ports:
       - 80:80
       - 443:443
+    depends_on:
+      - registry
+    links:
+      - "registry:registry"
     volumes:
       - ./certs:/etc/nginx/ssl:ro
-      - ./nginx:/etc/nginx/conf.d:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
