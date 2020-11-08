@@ -3,7 +3,8 @@
   "hosts": [
     "registry.dev",
     "gitea.dev",
-    "concourse.dev"
+    "concourse.dev",
+    "ipfs.dev"
   ],
   "key": {
     "algo": "rsa",

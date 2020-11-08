@@ -15,7 +15,11 @@ certs: certs/ca.crt certs/nginx.crt
 
 all: certs
 
-install-%: certs/%.crt
+data/registry/cert/nginx-key.pem:
+	mkdir -p data/registry/cert/
+	cp certs/nginx* data/registry/cert/
+
+install-%: certs/%.crt data/registry/cert/nginx-key.pem
 	sudo mkdir -p /usr/share/ca-certificates/local-dev
 	sudo cp certs/$*.crt /usr/share/ca-certificates/local-dev/$*.crt
 	sudo chmod 644 /usr/share/ca-certificates/local-dev/$*.crt

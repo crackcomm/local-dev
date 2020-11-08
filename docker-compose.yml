@@ -11,7 +11,7 @@ services:
     depends_on:
       - concourse-db
     volumes:
-      - /home/pah/.ipfn-os/gitea:/data
+      - ./data/gitea:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
@@ -21,7 +21,7 @@ services:
   concourse-db:
     image: postgres
     volumes:
-      - /home/pah/.ipfn-os/pgdata:/database
+      - ./data/pgdata:/database
     environment:
       POSTGRES_DB: concourse
       POSTGRES_PASSWORD: concourse_pass
@@ -34,13 +34,15 @@ services:
     privileged: true
     depends_on:
       - concourse-db
+      - ipfs
       - gitea
       - registry
     links:
+      - "ipfs:ipfs.dev"
       - "gitea:gitea.dev"
       - "registry:registry.dev"
     volumes:
-      - /home/pah/.ipfn-os/concourse:/worker-state
+      - ./data/concourse:/worker-state
     ports: ["6883:8080"]
     environment:
       CONCOURSE_POSTGRES_HOST: concourse-db
@@ -66,7 +68,7 @@ services:
       REGISTRY_HTTP_TLS_CERTIFICATE: /var/lib/registry/cert/nginx.crt
       REGISTRY_HTTP_TLS_KEY: /var/lib/registry/cert/nginx-key.pem
     volumes:
-      - /home/pah/.ipfn-os/registry:/var/lib/registry
+      - ./data/registry:/var/lib/registry
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
@@ -84,3 +86,15 @@ services:
       - ./certs:/etc/nginx/ssl:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+
+  ipfs:
+    restart: always
+    image: ipfs/go-ipfs:latest
+    ports:
+      - 6888:8080
+      - 5001:5001
+    environment:
+      IPFS_PROFILE: server
+    volumes:
+      - ./ipfs/export:/export
+      - ./ipfs/data:/data/ipfs

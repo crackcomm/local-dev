@@ -4,5 +4,6 @@
 *.crt
 
 certs/
+data/
 
 registry-image-resource/
