@@ -17,7 +17,7 @@ export PATH=$PATH:$CFSSLPATH
 ### fly (concourse CLI)
 
 ```shell
-wget https://concourse.local/api/v1/cli\?arch\=amd64\&platform\=linux -O fly
+wget https://concourse.dev/api/v1/cli\?arch\=amd64\&platform\=linux -O fly
 chmod +x fly
 ```
 
