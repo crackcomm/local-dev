@@ -1,6 +1,8 @@
-# Installation
+# local-dev
 
-## cfssl
+## Installation
+
+### cfssl
 
 Temporary installation
 
@@ -12,9 +14,13 @@ chmod +x $CFSSLPATH/cfssl $CFSSLPATH/cfssljson
 export PATH=$PATH:$CFSSLPATH
 ```
 
-## fly (concourse CLI)
+### fly (concourse CLI)
 
 ```shell
 wget https://concourse.local/api/v1/cli\?arch\=amd64\&platform\=linux -O fly
 chmod +x fly
 ```
+
+## Concourse
+
+See [ocaml-docker](https://github.com/crackcomm/ocaml-docker) for example pipeline on local-dev.
